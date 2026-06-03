@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>政治深伪视频的视觉框架与受众认知研究 — 崔晨曦</title>
+<style>
+/* ===== Reset & Variables ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#0a0a0f;
+  --bg-secondary:#12121a;
+  --bg-card:#1a1a2e;
+  --text-primary:#e8e8f0;
+  --text-secondary:#a0a0b8;
+  --text-muted:#6a6a80;
+  --accent:#5b8def;
+  --accent-glow:rgba(91,141,239,0.3);
+  --danger:#e0556a;
+  --warning:#e0a055;
+  --success:#55b080;
+  --purple:#8b5cf6;
+  --border:rgba(255,255,255,0.06);
+  --radius:12px;
+  --radius-sm:8px;
+  --font-mono:'SF Mono','Cascadia Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg-primary);color:var(--text-primary);line-height:1.7;overflow-x:hidden;
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg-primary)}
+::-webkit-scrollbar-thumb{background:var(--text-muted);border-radius:2px}
+
+/* ===== Section Common ===== */
+.section{
+  min-height:100vh;min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:80px 24px;position:relative;
+}
+.section-inner{max-width:900px;width:100%;margin:0 auto;position:relative;z-index:1}
+.section-label{
+  display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:3px;
+  color:var(--accent);margin-bottom:16px;font-weight:600;
+}
+.section-title{
+  font-size:clamp(24px,4vw,36px);font-weight:800;margin-bottom:24px;
+  background:linear-gradient(135deg,var(--text-primary) 0%,var(--text-secondary) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-text{color:var(--text-secondary);font-size:15px;margin-bottom:12px;line-height:1.9}
+.highlight{color:var(--accent);font-weight:600}
+.highlight-danger{color:var(--danger);font-weight:600}
+.highlight-warning{color:var(--warning);font-weight:600}
+.highlight-success{color:var(--success);font-weight:600}
+
+/* ===== Background Effect ===== */
+.glitch-bg{
+  position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.025;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(91,141,239,0.05) 2px,rgba(91,141,239,0.05) 4px);
+}
+
+/* ===== Hero ===== */
+.hero{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;min-height:100dvh;position:relative;text-align:center;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(91,141,239,0.08) 0%,transparent 70%),
+             radial-gradient(ellipse at 30% 20%,rgba(139,92,246,0.05) 0%,transparent 50%);
+}
+.hero-content{position:relative;z-index:1;padding:40px 24px;max-width:720px}
+.hero h1{
+  font-size:clamp(26px,5vw,44px);font-weight:900;line-height:1.3;margin-bottom:20px;
+}
+.hero h1 .glitch{
+  position:relative;display:inline-block;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero h1 .glitch::after{
+  content:attr(data-text);position:absolute;left:2px;top:0;
+  background:linear-gradient(135deg,var(--danger),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  opacity:0.3;clip-path:inset(40% 0 35% 0);
+}
+.hero-subtitle{color:var(--text-secondary);font-size:15px;max-width:520px;margin:0 auto 48px}
+.scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:var(--text-muted);font-size:11px;letter-spacing:2px;animation:bounce 2s infinite;
+}
+.scroll-hint .arrow{width:20px;height:20px;border-right:2px solid var(--text-muted);border-bottom:2px solid var(--text-muted);transform:rotate(45deg)}
+@keyframes bounce{0%,100%{opacity:0.3;transform:translateX(-50%) translateY(0)}50%{opacity:1;transform:translateX(-50%) translateY(8px)}}
+
+/* ===== Stats Row ===== */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 auto;max-width:640px}
+.stat-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 12px;text-align:center;transition:transform 0.3s,border-color 0.3s;
+}
+.stat-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.stat-number{font-size:28px;font-weight:900;color:var(--accent);font-family:var(--font-mono)}
+.stat-label{color:var(--text-muted);font-size:11px;margin-top:4px;line-height:1.4}
+
+/* ===== Feature Image ===== */
+.feature-img{
+  width:100%;max-width:100%;border-radius:var(--radius);margin:24px 0;
+  border:1px solid var(--border);display:block;
+}
+.img-center{text-align:center;margin:24px 0}
+.img-center img{max-width:100%;border-radius:var(--radius);border:1px solid var(--border)}
+
+/* ===== Data Table ===== */
+.data-table{
+  width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+}
+.data-table th{
+  background:rgba(91,141,239,0.12);color:var(--accent);padding:10px 14px;
+  text-align:left;font-weight:600;font-size:12px;letter-spacing:0.5px;
+}
+.data-table td{
+  padding:10px 14px;border-top:1px solid var(--border);color:var(--text-secondary);
+}
+.data-table tr:hover td{background:rgba(255,255,255,0.02)}
+.data-table .num{font-family:var(--font-mono);color:var(--text-primary);text-align:center}
+
+/* ===== Framework Section ===== */
+.framework-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:32px 0}
+.fw-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 16px;text-align:center;cursor:pointer;transition:all 0.3s;
+  position:relative;overflow:hidden;
+}
+.fw-card:hover,.fw-card.active{border-color:var(--accent);box-shadow:0 0 30px var(--accent-glow)}
+.fw-card .fw-icon{font-size:28px;margin-bottom:10px}
+.fw-card .fw-title{font-weight:700;font-size:14px;margin-bottom:4px}
+.fw-card .fw-subtitle{font-size:10px;color:var(--text-muted)}
+.fw-detail{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;margin-top:16px;display:none;
+}
+.fw-detail.show{display:block;animation:fadeIn 0.3s ease}
+.fw-detail h4{color:var(--accent);margin-bottom:14px;font-size:16px}
+.fw-detail p{color:var(--text-secondary);font-size:14px;line-height:1.8;margin-bottom:8px}
+.fw-detail p strong, .fw-detail p .sub-label{color:var(--accent);font-weight:600}
+.fw-detail ul{list-style:none;margin-top:8px}
+.fw-detail ul li{color:var(--text-secondary);font-size:13px;padding:5px 0 5px 18px;position:relative;line-height:1.6}
+.fw-detail ul li::before{content:'▸';position:absolute;left:0;color:var(--accent);font-size:11px}
+
+/* ===== Comparison Section ===== */
+.comparison-wrap{
+  position:relative;margin:32px 0;border-radius:var(--radius);
+  overflow:hidden;aspect-ratio:16/9;background:var(--bg-card);
+  user-select:none;-webkit-user-select:none;
+}
+.comparison-wrap img{
+  position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+  pointer-events:none;
+}
+.comparison-wrap img.img-right{clip-path:inset(0 0 0 50%)}
+.comparison-wrap img.img-left{clip-path:inset(0 50% 0 0)}
+.comp-label{
+  position:absolute;bottom:24px;font-size:11px;letter-spacing:1px;
+  padding:5px 14px;border-radius:4px;background:rgba(10,10,15,0.85);color:var(--text-primary);
+  z-index:1;pointer-events:none;
+}
+.comp-label.left{left:24px}
+.comp-label.right{right:24px}
+.comp-handle{
+  position:absolute;top:0;bottom:0;left:50%;width:4px;
+  background:rgba(255,255,255,0.9);z-index:2;
+  transform:translateX(-50%);pointer-events:none;
+  box-shadow:0 0 12px rgba(255,255,255,0.4);
+}
+.comp-handle::after{
+  content:'⟷';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:44px;height:44px;border-radius:50%;background:white;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#0a0a0f;font-weight:bold;
+  box-shadow:0 2px 16px rgba(0,0,0,0.5);pointer-events:none;
+}
+.comp-overlay{
+  position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;
+  cursor:ew-resize;touch-action:none;background:transparent;
+}
+
+/* ===== Chart Container ===== */
+.chart-container{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0}
+.chart-box{width:100%;height:380px}
+.chart-note{text-align:center;color:var(--text-muted);font-size:11px;margin-top:8px}
+
+/* ===== Key Finding ===== */
+.key-finding{
+  background:linear-gradient(135deg,rgba(224,85,106,0.08),rgba(91,141,239,0.08));
+  border:1px solid rgba(224,85,106,0.2);border-radius:var(--radius);
+  padding:28px;margin:24px 0;
+}
+.key-finding .kf-label{color:var(--danger);font-size:11px;letter-spacing:2px;font-weight:600;margin-bottom:10px}
+.key-finding .kf-text{color:var(--text-primary);font-size:15px;line-height:1.9}
+.key-finding .kf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.key-finding .kf-item{background:rgba(10,10,15,0.4);border-radius:var(--radius-sm);padding:16px}
+.key-finding .kf-item.kf-item-full{grid-column:1/-1}
+.key-finding .kf-item .kf-num{font-size:28px;font-weight:900;font-family:var(--font-mono);margin-bottom:4px}
+.key-finding .kf-item .kf-desc{font-size:12px;color:var(--text-muted);line-height:1.5}
+
+/* ===== Dual Cards ===== */
+.dual-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:32px 0}
+.dual-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;transition:all 0.3s;
+}
+.dual-card.danger{border-top:3px solid var(--danger)}
+.dual-card.success{border-top:3px solid var(--success)}
+.dual-card .dual-icon{font-size:32px;margin-bottom:12px;display:block}
+.dual-card h3{font-size:16px;margin-bottom:12px}
+.dual-card p{font-size:13px;color:var(--text-secondary);line-height:1.8}
+
+/* ===== Video Quiz ===== */
+.quiz-intro{text-align:center;margin-bottom:28px}
+.video-quiz-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0}
+.video-quiz-item{
+  background:var(--bg-card);border:2px solid var(--border);border-radius:var(--radius);
+  padding:16px;transition:all 0.3s;text-align:center;
+}
+.video-quiz-item video{
+  width:100%;border-radius:var(--radius-sm);margin-bottom:12px;
+  background:#000;max-height:240px;
+}
+.video-quiz-item .vq-label{font-size:12px;color:var(--text-muted);letter-spacing:1px;margin-bottom:8px}
+.video-quiz-item .vq-buttons{display:flex;gap:10px;justify-content:center;margin-top:12px;position:relative;z-index:5}
+.vq-btn{
+  padding:10px 28px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:600;
+  border:2px solid;transition:all 0.3s;background:transparent;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.vq-btn.real-btn{border-color:var(--success);color:var(--success)}
+.vq-btn.real-btn:hover{background:var(--success);color:#fff}
+.vq-btn.fake-btn{border-color:var(--danger);color:var(--danger)}
+.vq-btn.fake-btn:hover{background:var(--danger);color:#fff}
+.video-quiz-item.answered{pointer-events:none}
+.video-quiz-item.answered .vq-btn{opacity:0.4;pointer-events:none}
+.vq-result{
+  display:none;margin-top:12px;padding:8px 16px;border-radius:12px;
+  font-size:13px;font-weight:600;
+}
+.vq-result.show{display:inline-block}
+.vq-result.correct{background:rgba(85,176,128,0.15);color:var(--success)}
+.vq-result.wrong{background:rgba(224,85,106,0.15);color:var(--danger)}
+.quiz-score{text-align:center;margin-top:28px;font-size:18px;font-weight:700;display:none}
+.quiz-score.show{display:block}
+.quiz-reset{
+  display:none;margin:20px auto 0;padding:10px 28px;background:transparent;
+  border:1px solid var(--accent);color:var(--accent);border-radius:20px;
+  cursor:pointer;font-size:13px;transition:all 0.3s;
+}
+.quiz-reset.show{display:block}
+.quiz-reset:hover{background:var(--accent);color:var(--text-primary)}
+
+/* ===== Conclusion ===== */
+.conclusion-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:32px 0}
+.conclusion-card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;transition:all 0.3s;
+}
+.conclusion-card:hover{border-color:var(--accent)}
+.conclusion-card .cc-icon{font-size:24px;margin-bottom:10px;display:block}
+.conclusion-card h4{font-size:15px;margin-bottom:8px}
+.conclusion-card p{font-size:13px;color:var(--text-secondary);line-height:1.7}
+
+/* ===== Footer ===== */
+.footer{
+  text-align:center;padding:40px 24px;color:var(--text-muted);font-size:12px;
+  border-top:1px solid var(--border);
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{opacity:0;transform:translateY(30px);transition:all 0.6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ===== Responsive ===== */
+@media (max-width:768px){
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:8px;max-width:100%}
+  .stat-number{font-size:22px}
+  .framework-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .fw-card{padding:16px 10px}
+  .fw-card .fw-title{font-size:12px}
+  .dual-cards{grid-template-columns:1fr}
+  .video-quiz-grid{grid-template-columns:1fr}
+  .conclusion-grid{grid-template-columns:1fr}
+  .chart-box{height:280px}
+  .data-table{font-size:11px}
+  .data-table th,.data-table td{padding:8px 10px}
+  .key-finding .kf-grid{grid-template-columns:1fr}
+  .comp-label{font-size:10px;padding:4px 10px;bottom:12px}
+  .comp-label.left{left:12px}.comp-label.right{right:12px}
+}
+@media (max-width:480px){
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:6px}
+  .stat-number{font-size:18px}
+  .stat-label{font-size:10px}
+  .framework-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .fw-card{padding:14px 8px}
+  .fw-card .fw-icon{font-size:22px}
+  .section{padding:40px 14px}
+  .fw-detail{padding:16px}
+  .comparison-wrap{aspect-ratio:4/3}
+  .key-finding{padding:16px}
+  .key-finding .kf-text{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="glitch-bg"></div>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content fade-in visible">
+    <h1>政治<span class="glitch" data-text="深伪视频">深伪视频</span>的<br>视觉框架与受众认知研究</h1>
+    <p class="hero-subtitle">
+      基于四层次视觉框架模型与视觉语法理论，揭示深度伪造视频的视觉操纵逻辑及其对中国网民认知防御的隐蔽解构机制
+    </p>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number">52</div>
+        <div class="stat-label">高热深伪视频<br>内容分析样本</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">119</div>
+        <div class="stat-label">在线实验<br>被试人数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">57.7%</div>
+        <div class="stat-label">新闻框架<br>真实性误判率</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">50.0%</div>
+        <div class="stat-label">真实影像<br>识别准确率</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>向下滚动探索</span><div class="arrow"></div></div>
+</section>
+
+<!-- ==================== 01 研究背景 ==================== -->
+<section class="section" id="background">
+  <div class="section-inner">
+    <div class="section-label fade-in">01 / 研究背景</div>
+    <h2 class="section-title fade-in">深度伪造：信息战的新武器</h2>
+    <p class="section-text fade-in">
+      深度伪造（Deepfake）技术的迭代发展正<span class="highlight-danger">深刻重塑全球政治传播生态</span>，
+      对公众的认知安全构成严峻挑战。从2017年首个深伪视频出现至今，深伪内容数量呈指数级增长，
+      其逼真度已足以欺骗大多数普通受众。
+    </p>
+    <p class="section-text fade-in">
+      现有研究多聚焦于<span class="highlight">算法层面的技术检测</span>，而对深伪视频的
+      <span class="highlight">视觉框架特征</span>及其<span class="highlight">跨文化受众心理机制</span>
+      的研究尚不充分。本研究收集了52条高热度西方政治深伪视频，通过计算机视觉辅助内容分析与在线实验（N=119），
+      首次整合视觉框架四层次模型与视觉语法理论展开系统考察。
+    </p>
+    <img src="01.jpg" alt="研究背景" class="feature-img fade-in">
+  </div>
+</section>
+
+<!-- ==================== 02 理论框架 ==================== -->
+<section class="section" id="framework" style="background:var(--bg-secondary)">
+  <div class="section-inner">
+    <div class="section-label fade-in">02 / 理论框架</div>
+    <h2 class="section-title fade-in">四层次视觉框架模型</h2>
+    <p class="section-text fade-in">
+      本研究整合<span class="highlight">视觉框架四层次模型</span>（Rodriguez & Dimitrova, 2011）与
+      <span class="highlight">视觉语法理论</span>（Kress & van Leeuwen, 2006），
+      构建政治深伪视频的系统分析框架。点击下方卡片查看各层次的具体发现。
+    </p>
+
+    <div class="framework-grid">
+      <div class="fw-card fade-in active" data-layer="0" onclick="showLayer(0)">
+        <div class="fw-icon">🔍</div>
+        <div class="fw-title">外延层次</div>
+        <div class="fw-subtitle">Denotation · 视觉主题</div>
+      </div>
+      <div class="fw-card fade-in" data-layer="1" onclick="showLayer(1)">
+        <div class="fw-icon">🎨</div>
+        <div class="fw-title">风格层次</div>
+        <div class="fw-subtitle">Style · 视觉形式</div>
+      </div>
+      <div class="fw-card fade-in" data-layer="2" onclick="showLayer(2)">
+        <div class="fw-icon">🎭</div>
+        <div class="fw-title">内涵层次</div>
+        <div class="fw-subtitle">Connotation · 视觉修辞</div>
+      </div>
+      <div class="fw-card fade-in" data-layer="3" onclick="showLayer(3)">
+        <div class="fw-icon">🧠</div>
+        <div class="fw-title">意识形态层次</div>
+        <div class="fw-subtitle">Ideology · 深层逻辑</div>
+      </div>
+    </div>
+
+    <!-- Layer 0: Denotation -->
+    <div class="fw-detail fade-in" id="fw-detail-0">
+      <h4>外延层次 · 锚定重大政治进程与核心权力主体</h4>
+      <p>52条视频中，<span class="highlight">44条（84.86%）</span>呈现明确的政治事件锚点。事件类型以<span class="highlight">选举进程（33条）</span>为核心创作母题，覆盖美、印、印尼、英等8国选举进程。所有视频均涉及特定政治人物，其中国家元首占比高达<span class="highlight">51.92%</span>。</p>
+      <table class="data-table">
+        <tr><th>事件类型</th><th style="text-align:center">数量</th><th>典型案例</th></tr>
+        <tr><td>选举进程</td><td class="num">33</td><td>印尼总统候选人阿拉伯语演讲、拜登退选声明、伊姆兰·汗狱中胜选</td></tr>
+        <tr><td>武装冲突</td><td class="num">5</td><td>泽连斯基劝降视频、俄军投降声明</td></tr>
+        <tr><td>外交决策</td><td class="num">3</td><td>特朗普策动比利时退出气候协定</td></tr>
+        <tr><td>复合型事件</td><td class="num">3</td><td>马丁·路德·金支持特朗普、尼克松未发表演讲</td></tr>
+      </table>
+      <p style="margin-top:12px"><strong>人物类型分布：</strong>国家元首51.92%、政治行动者13.46%、选举候选人9.62%、政党领袖、历史政治人物等7类主体。通过构建人物的争议性行为，服务于伪造政治声明、虚构行为丑闻、篡改政治立场等政治传播目的。</p>
+    </div>
+
+    <!-- Layer 1: Style -->
+    <div class="fw-detail fade-in" id="fw-detail-1">
+      <h4>风格层次 · 极端化视觉策略，冷色调与高饱和为主</h4>
+      <p>采用视觉语法理论的<span class="highlight">氛围系统</span>，对饱和度、色调和色彩丰富度进行量化分析：</p>
+      <table class="data-table">
+        <tr><th>指标</th><th class="num">最小值</th><th class="num">最大值</th><th class="num">中位数</th><th class="num">平均值</th></tr>
+        <tr><td>饱和度（Saturation）</td><td class="num">4.64</td><td class="num">160.77</td><td class="num">80.76</td><td class="num">84.84</td></tr>
+        <tr><td>色调角度（Hue Angle）</td><td class="num">1.84</td><td class="num">319.09</td><td class="num">174.79</td><td class="num">150.61</td></tr>
+        <tr><td>色彩丰富度（Color Entropy）</td><td class="num">2.12</td><td class="num">7.91</td><td class="num">7.18</td><td class="num">6.96</td></tr>
+      </table>
+      <p style="margin-top:12px"><strong>饱和度：</strong>跨度极大（4.64-160.77），呈现极端化策略——低饱和度（0-60）还原历史感（10条），高饱和度（100-160）制造生理冲击（30条），部分中等饱和度模拟自然色彩。均值>中位数表明右偏分布。</p>
+      <p><strong>色调：</strong>覆盖317.25°色域，<span class="highlight">冷色调占比69.2%</span>，暖色调仅30.8%。青蓝色系（150°-270°）使用最广（26条/50%），凸显理性操控倾向。暖色中红色（0°-30°）最常见。</p>
+      <p><strong>色彩丰富度：</strong>图像熵均值6.96，高熵值组（>7.0）占61.5%，低熵值组（<6.0）仅7.7%。大多数视频使用丰富色彩吸引注意力。</p>
+    </div>
+
+    <!-- Layer 2: Connotation -->
+    <div class="fw-detail fade-in" id="fw-detail-2">
+      <h4>内涵层次 · 客观视角、完整表征与多变场景下的伪真实建构</h4>
+      <p><strong>互动模式：</strong>旁观类图像（M=0.4048）吸引力最稳定，无人物图像（M=0.0904）最低。旁观视角让观众感觉更自然真实，降低对视频真实性的怀疑。</p>
+      <p><strong>视角：</strong>客观视角占绝对主导（M=0.991，SD=0.046），仅2条视频涉及主观视角。深伪视频大量采用客观叙事角度来增强纪实感。</p>
+      <p><strong>情感类别：</strong>个体类图像占压倒性多数（M=0.9042），以真实人物表情和个体照片形式呈现，强化情感共鸣。异化类（0.0648）和移情类（0.0312）极少，鉴赏类完全缺失。</p>
+      <p><strong>人物表征：</strong>完整表征为主要方式（M=0.6454），直接突出人物面部特征与身份信息。转喻表征（0.1883）为辅助手段。</p>
+      <p><strong>叙事与背景：</strong>线性叙事为主导，背景变换上相同背景视角、相同背景不同视角、其他背景三种分布均衡，说明场景设计复杂多样。</p>
+    </div>
+
+    <!-- Layer 3: Ideology -->
+    <div class="fw-detail fade-in" id="fw-detail-3">
+      <h4>意识形态层次 · 隐蔽的认知解构机制 <span style="font-size:12px;color:var(--text-muted);font-weight:400">（初步探索）</span></h4>
+      <p>在前三个层次基础上，政治深伪视频通过视觉修辞<span class="highlight-danger">隐蔽地传递政治立场</span>，实现对受众认知防御系统的渐进式瓦解：</p>
+      <ul>
+        <li>外延层锚定权威主体建立<span class="highlight">认知信任基础</span></li>
+        <li>风格层模仿专业新闻视觉惯例<span class="highlight-danger">绕过认知防御</span></li>
+        <li>内涵层营造"伪真实"消解<span class="highlight-warning">视觉怀疑本能</span></li>
+        <li>三层协同形成对政治信息信任机制的<span class="highlight-danger">隐蔽解构</span></li>
+      </ul>
+      <p style="margin-top:12px">本层次因果机制的系统验证仍需后续研究推进，但已有的受众实验结果为此提供了初步的经验支持（见下文第四部分）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 03 视觉对比 ==================== -->
+<section class="section" id="comparison">
+  <div class="section-inner">
+    <div class="section-label fade-in">03 / 视觉对比</div>
+    <h2 class="section-title fade-in">真伪之间的视觉战线</h2>
+    <p class="section-text fade-in">
+      深伪视频并非随机生成，而是<span class="highlight">精心设计的视觉说服工具</span>。
+      下方左侧为真实政治新闻影像，右侧为深度伪造合成影像——
+      <span class="highlight-warning">拖动中间滑杆</span>左右对比。
+    </p>
+
+    <div class="comparison-wrap fade-in" id="comparison-slider">
+      <img src="03视觉对比1.jpg" alt="真实新闻影像" class="img-left" id="img-left">
+      <img src="03视觉对比2.gif" alt="深伪合成影像" class="img-right" id="img-right">
+      <span class="comp-label left">📰 真实新闻影像</span>
+      <span class="comp-label right">🤖 深伪合成影像</span>
+      <div class="comp-handle" id="comp-handle"></div>
+      <div class="comp-overlay" id="comp-overlay"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 04 实验结果 ==================== -->
+<section class="section" id="results" style="background:var(--bg-secondary)">
+  <div class="section-inner">
+    <div class="section-label fade-in">04 / 实验结果</div>
+    <h2 class="section-title fade-in">视觉框架如何影响受众？</h2>
+    <p class="section-text fade-in">
+      在线实验（N=119，中国网民），单因素组间设计（新闻深伪组 / 冲突深伪组 / 娱乐深伪组 / 科普控制组 / 真实影像组），
+      系统考察不同视觉框架对<span class="highlight">情绪唤醒</span>、<span class="highlight">真实性感知</span>及<span class="highlight">传播意向</span>的影响。
+    </p>
+
+    <!-- ANOVA Table -->
+    <div class="chart-container fade-in">
+      <h4 style="margin-bottom:12px;font-size:14px">方差分析：视频框架类型对受众心理感知的显著影响</h4>
+      <table class="data-table">
+        <tr><th>因变量</th><th class="num">F / Welch值</th><th class="num">显著性 (p)</th></tr>
+        <tr><td>真实性感知</td><td class="num">Welch = 97.717</td><td class="num"><strong style="color:var(--danger)">&lt; .001</strong></td></tr>
+        <tr><td>社会整体威胁</td><td class="num">F = 14.001</td><td class="num"><strong style="color:var(--danger)">&lt; .001</strong></td></tr>
+        <tr><td>个体认知威胁</td><td class="num">Welch = 12.269</td><td class="num"><strong style="color:var(--danger)">&lt; .001</strong></td></tr>
+        <tr><td>消极情绪</td><td class="num">F = 3.165</td><td class="num"><strong style="color:var(--warning)">.017</strong></td></tr>
+        <tr><td>传播意向</td><td class="num">F = 3.000</td><td class="num"><strong style="color:var(--warning)">.021</strong></td></tr>
+        <tr><td>情感反应强度</td><td class="num">F = 2.977</td><td class="num"><strong style="color:var(--warning)">.022</strong></td></tr>
+        <tr><td>积极情绪</td><td class="num">F = 2.389</td><td class="num">.055（不显著）</td></tr>
+      </table>
+      <p class="chart-note">深度伪造视觉框架主要通过<span style="color:var(--danger)">负面情感动员</span>产生作用，而非通过诱发正面情绪</p>
+    </div>
+
+    <!-- Key Finding: Misidentification -->
+    <div class="key-finding fade-in">
+      <div class="kf-label">⚡ 识别准确率：卡方检验 χ²=54.94，p&lt;.001，Cramer's V=0.679</div>
+      <div class="kf-text">
+        不同视觉框架在欺骗性与信任侵蚀力上存在<span class="highlight-danger">显著差异</span>：
+      </div>
+      <div class="kf-grid">
+        <div class="kf-item">
+          <div class="kf-num" style="color:var(--danger)">42.3%</div>
+          <div class="kf-desc"><strong style="color:var(--text-primary)">新闻深伪组</strong>识别准确率最低，<span class="highlight-danger">57.7%被试误判为真实</span>。模拟专业新闻的视觉框架能有效绕过受众认知防线。</div>
+        </div>
+        <div class="kf-item">
+          <div class="kf-num" style="color:var(--warning)">84.6%</div>
+          <div class="kf-desc"><strong style="color:var(--text-primary)">冲突深伪组</strong>受众表现出较强警觉性，仅<span class="highlight-danger">15.4%被试产生误判</span>。基于高饱和、非线性剪辑及主观视角的感官冲突框架，更容易诱发受众的认知警觉与怀疑。</div>
+        </div>
+        <div class="kf-item">
+          <div class="kf-num" style="color:var(--success)">100%</div>
+          <div class="kf-desc"><strong style="color:var(--text-primary)">娱乐深伪组</strong>全体被试均识破伪造属性。娱乐框架画质参差、合成痕迹明显且人物行为与身份存在巨大反差，受众对此有极强辨识力。</div>
+        </div>
+        <div class="kf-item">
+          <div class="kf-num" style="color:var(--accent)">95.7%</div>
+          <div class="kf-desc"><strong style="color:var(--text-primary)">科普控制组</strong>表现稳健，绝大多数被试准确识别控制组内容，作为实验的基准参照线。</div>
+        </div>
+        <div class="kf-item kf-item-full">
+          <div class="kf-num" style="color:var(--warning)">50.0%</div>
+          <div class="kf-desc"><strong style="color:var(--text-primary)">真实影像组</strong>仅一半被试正确识别——<span class="highlight-danger">另一半将真实政客影像误判为AI伪造</span>。深度伪造技术的泛滥不仅提升了虚假信息的隐蔽性，更严重侵蚀了受众对真实视觉素材的信任底线。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mediation Images -->
+    <p class="section-text fade-in" style="margin-top:12px">
+      情绪唤醒在视觉框架影响传播意向与真实感知中发挥<span class="highlight">显著中介作用</span>。
+      冲突深伪视频通过诱发高强度情绪唤醒，利用受众感性反应换取对内容真实性的认可。
+    </p>
+    <div class="img-center fade-in">
+      <img src="情绪对传播意向中介图.png" alt="情绪对传播意向中介效应" style="max-width:100%;max-height:440px">
+      <p class="chart-note">图：情感反应强度对传播意向的中介效应（PROCESS Model 4）</p>
+    </div>
+    <div class="img-center fade-in">
+      <img src="情绪对真实感知中介图.png" alt="情绪对真实感知中介效应" style="max-width:100%;max-height:440px">
+      <p class="chart-note">图：情感反应强度对真实感知的中介效应</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 05 AI LITERACY ==================== -->
+<section class="section" id="ai-literacy">
+  <div class="section-inner">
+    <div class="section-label fade-in">05 / 关键发现</div>
+    <h2 class="section-title fade-in">AI素养的"双刃剑"效应</h2>
+    <p class="section-text fade-in">
+      调节模型显示（R²=.6389，F=19.10，p&lt;.001），视频框架×AI素养交互项呈现
+      <span class="highlight-warning">边缘显著的调节趋势</span>（ΔR²=.0306，p=.0645）。
+      AI素养并非单纯的保护因素——其负面效应甚至大于正面防御。
+    </p>
+
+    <div class="dual-cards">
+      <div class="dual-card danger fade-in">
+        <span class="dual-icon">⚠️</span>
+        <h3>暗面：新闻框架下素养增强欺骗性</h3>
+        <p>在<span class="highlight-danger">新闻框架</span>中，低AI素养受众的真实性感知不显著（p=.374），
+        而<span class="highlight-danger">高AI素养受众的真实感评分显著上升</span>（Effect=1.77，p&lt;.001，R²=.272）。
+        高素养者因过度依赖新闻专业主义视觉符号而产生<span class="highlight-danger">路径依赖</span>，
+        对"看起来专业"的深伪内容反而放松警惕。</p>
+      </div>
+      <div class="dual-card success fade-in">
+        <span class="dual-icon">🛡️</span>
+        <h3>亮面：对"低级伪造"的敏锐识别</h3>
+        <p>在<span class="highlight">冲突框架</span>和<span class="highlight">娱乐框架</span>下，
+        因其强烈的视觉刺激与明显虚构性，无论高低素养受众均能敏锐捕捉虚假性。
+        AI素养在面对此类"<span class="highlight">一眼假</span>"的低级伪造时，未发挥实质调节作用。</p>
+      </div>
+    </div>
+
+    <div class="img-center fade-in">
+      <img src="AI素养.png" alt="AI素养调节效应" style="max-width:100%;max-height:500px">
+      <p class="chart-note">图：交互作用可视化散点图及简单斜率分析——新闻框架（紫）呈最陡峭上升趋势</p>
+    </div>
+
+    <div class="key-finding fade-in">
+      <div class="kf-label">⚡ 核心悖论</div>
+      <div class="kf-text">
+        AI素养的提高虽增强了辨伪能力，却也<span class="highlight-danger">无差别地侵蚀了受众对真实影像的信任</span>——
+        真实组识别准确率仅<span class="highlight-danger">50.0%</span>，控制组和真实组随AI素养提升呈现微弱下降趋势。
+        这是深度伪造泛滥对视觉信任体系的<span class="highlight-warning">负向溢出效应</span>。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 06 VIDEO QUIZ ==================== -->
+<section class="section" id="quiz" style="background:var(--bg-secondary)">
+  <div class="section-inner">
+    <div class="section-label fade-in">06 / 互动测试</div>
+    <h2 class="section-title fade-in">你能分辨真伪吗？</h2>
+    <p class="section-text quiz-intro fade-in">
+      以下4段视频分别来自<span class="highlight">真实影像组</span>与<span class="highlight-danger">深伪组（新闻、冲突、娱乐框架）</span>。
+      请逐一观看后判断每段视频是<span class="highlight">「真实」</span>还是<span class="highlight-danger">「伪造」</span>。
+      <br><span style="font-size:13px;color:var(--text-muted)">实验中，真实影像识别准确率仅50.0%，新闻深伪误判率高达57.7%——你的判断力如何？</span>
+    </p>
+
+    <div class="video-quiz-grid" id="video-quiz-grid">
+      <!-- Video 1: Real -->
+      <div class="video-quiz-item fade-in" data-idx="0" data-answer="real">
+        <div class="vq-label">视频 A</div>
+        <video controls preload="metadata" playsinline>
+          <source src="06真实组/1月29日 (4).mp4" type="video/mp4">
+          您的浏览器不支持视频播放
+        </video>
+        <div class="vq-buttons">
+          <button class="vq-btn real-btn" data-choice="real">✓ 真实</button>
+          <button class="vq-btn fake-btn" data-choice="fake">✗ 伪造</button>
+        </div>
+        <div class="vq-result" id="vq-result-0"></div>
+      </div>
+
+      <!-- Video 2: Deepfake News -->
+      <div class="video-quiz-item fade-in" data-idx="1" data-answer="fake">
+        <div class="vq-label">视频 B</div>
+        <video controls preload="metadata" playsinline>
+          <source src="06深伪组/新闻（低饱和+客观+线性+专业）/1月29日 (9).mp4" type="video/mp4">
+          您的浏览器不支持视频播放
+        </video>
+        <div class="vq-buttons">
+          <button class="vq-btn real-btn" data-choice="real">✓ 真实</button>
+          <button class="vq-btn fake-btn" data-choice="fake">✗ 伪造</button>
+        </div>
+        <div class="vq-result" id="vq-result-1"></div>
+      </div>
+
+      <!-- Video 3: Deepfake Conflict -->
+      <div class="video-quiz-item fade-in" data-idx="2" data-answer="fake">
+        <div class="vq-label">视频 C</div>
+        <video controls preload="metadata" playsinline>
+          <source src="06深伪组/冲突（高饱和+主观视角+非线性+异化）/1月29日 (5).mp4" type="video/mp4">
+          您的浏览器不支持视频播放
+        </video>
+        <div class="vq-buttons">
+          <button class="vq-btn real-btn" data-choice="real">✓ 真实</button>
+          <button class="vq-btn fake-btn" data-choice="fake">✗ 伪造</button>
+        </div>
+        <div class="vq-result" id="vq-result-2"></div>
+      </div>
+
+      <!-- Video 4: Deepfake Entertainment -->
+      <div class="video-quiz-item fade-in" data-idx="3" data-answer="fake">
+        <div class="vq-label">视频 D</div>
+        <video controls preload="metadata" playsinline>
+          <source src="06深伪组/恶搞（娱乐化+违背性格+生动情绪化）/1月29日 (8).mp4" type="video/mp4">
+          您的浏览器不支持视频播放
+        </video>
+        <div class="vq-buttons">
+          <button class="vq-btn real-btn" data-choice="real">✓ 真实</button>
+          <button class="vq-btn fake-btn" data-choice="fake">✗ 伪造</button>
+        </div>
+        <div class="vq-result" id="vq-result-3"></div>
+      </div>
+    </div>
+
+    <div class="quiz-score" id="quiz-score"></div>
+    <button class="quiz-reset" id="quiz-reset" onclick="resetVideoQuiz()">重新测试</button>
+  </div>
+</section>
+
+<!-- ==================== 07 CONCLUSIONS ==================== -->
+<section class="section" id="conclusions">
+  <div class="section-inner">
+    <div class="section-label fade-in">07 / 研究结论</div>
+    <h2 class="section-title fade-in">重建数字时代的视觉信任</h2>
+    <div class="conclusion-grid">
+      <div class="conclusion-card fade-in">
+        <span class="cc-icon">🔬</span>
+        <h4>理论创新</h4>
+        <p>首创性地整合视觉框架四层次模型与视觉语法理论，通过计算机视觉辅助内容分析（52条视频），系统揭示了政治深伪视频从外延锚定→风格包装→内涵建构→意识形态输出的四层次视觉操纵逻辑。</p>
+      </div>
+      <div class="conclusion-card fade-in">
+        <span class="cc-icon">💡</span>
+        <h4>双刃剑效应</h4>
+        <p>发现AI素养在新闻框架下的反直觉增强欺骗效应——高素养者因对新闻专业主义符号的过度信任而沦为"精致伪造的俘虏"。单纯"提升AI素养"不够，需转向"精准AI素养教育"。</p>
+      </div>
+      <div class="conclusion-card fade-in">
+        <span class="cc-icon">🌐</span>
+        <h4>真相衰落</h4>
+        <p>真实政治影像识别率仅50%——深度伪造的泛滥不仅提升了虚假信息的隐蔽性（新闻框架误判率57.7%），更严重侵蚀了受众对真实视觉素材的信任底线，折射出数字时代"真相衰落"的深层困境。</p>
+      </div>
+      <div class="conclusion-card fade-in">
+        <span class="cc-icon">🛡️</span>
+        <h4>现实启示</h4>
+        <p>防范虚假信息跨国传播需从三个层面协同推进：公众精准AI素养教育、平台视觉内容审核机制升级、国际政治传播伦理规范构建，共同重建数字时代的视觉信任体系。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <p>2022级传播学（舆情分析方向） · 崔晨曦</p>
+  <p style="margin-top:4px">指导教师：詹骞 ｜ 中国传媒大学 新闻学院</p>
+</footer>
+
+<script>
+// ===== Intersection Observer =====
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') })
+}, { threshold: 0.12 })
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el))
+
+// ===== Framework Layer Switch =====
+function showLayer(idx) {
+  document.querySelectorAll('.fw-card').forEach(c => c.classList.remove('active'))
+  document.querySelectorAll('.fw-card')[idx].classList.add('active')
+  document.querySelectorAll('.fw-detail').forEach(d => d.classList.remove('show'))
+  const detail = document.getElementById('fw-detail-' + idx)
+  detail.classList.add('show')
+  detail.classList.add('visible')
+}
+showLayer(0)
+
+// ===== Comparison Slider =====
+window.addEventListener('DOMContentLoaded', function(){
+  var wrap = document.getElementById('comparison-slider')
+  var overlay = document.getElementById('comp-overlay')
+  var handle = document.getElementById('comp-handle')
+  var imgL = document.getElementById('img-left')
+  var imgR = document.getElementById('img-right')
+  if(!wrap||!overlay||!imgL||!imgR) return
+
+  var dragging = false
+
+  function moveTo(pct) {
+    pct = Math.max(0.02, Math.min(0.98, pct))
+    handle.style.left = (pct * 100) + '%'
+    imgL.style.clipPath = 'inset(0 ' + ((1-pct)*100) + '% 0 0)'
+    imgR.style.clipPath = 'inset(0 0 0 ' + (pct*100) + '%)'
+  }
+
+  function clientX(e) { return e.touches ? e.touches[0].clientX : e.clientX }
+
+  overlay.addEventListener('mousedown', function(e) {
+    var r = wrap.getBoundingClientRect()
+    dragging = true
+    moveTo((e.clientX - r.left) / r.width)
+    e.preventDefault()
+  })
+
+  overlay.addEventListener('touchstart', function(e) {
+    var r = wrap.getBoundingClientRect()
+    dragging = true
+    moveTo((e.touches[0].clientX - r.left) / r.width)
+    e.preventDefault()
+  }, {passive: false})
+
+  document.addEventListener('mousemove', function(e) {
+    if(!dragging) return
+    var r = wrap.getBoundingClientRect()
+    moveTo((e.clientX - r.left) / r.width)
+    e.preventDefault()
+  })
+
+  document.addEventListener('touchmove', function(e) {
+    if(!dragging) return
+    var r = wrap.getBoundingClientRect()
+    moveTo((e.touches[0].clientX - r.left) / r.width)
+    e.preventDefault()
+  }, {passive: false})
+
+  document.addEventListener('mouseup', function(){ dragging = false })
+  document.addEventListener('touchend', function(){ dragging = false })
+
+  moveTo(0.5)
+})
+
+// ===== Video Quiz =====
+var vqAnswered = 0, vqCorrect = 0
+var answerLabels = {real:'真实',fake:'伪造'}
+var answerDetails = {
+  '0':'这是真实的政治新闻影像。但实验中有50%的被试将其误判为AI伪造——这就是"真相衰落"。',
+  '1':'这是新闻框架深伪视频。低饱和度、线性叙事、客观旁观视角极大增强了欺骗性，57.7%被试误判为真实。',
+  '2':'这是冲突框架深伪视频。高饱和、主观视角与非线性剪辑引发了受众的认知警觉，仅15.4%被试误判。',
+  '3':'这是娱乐框架深伪视频。夸张视觉特效与行为反差极为明显，全体被试均识破了其伪造属性。'
+}
+
+// Walk up the DOM tree to find an element with a given class
+function findParent(el, cls) {
+  while(el) {
+    if(el.classList && el.classList.contains(cls)) return el
+    el = el.parentElement
+  }
+  return null
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  var grid = document.getElementById('video-quiz-grid')
+  if(!grid) return
+
+  grid.addEventListener('click', function(e) {
+    var btn = findParent(e.target, 'vq-btn')
+    if(!btn) return
+
+    var item = findParent(btn, 'video-quiz-item')
+    if(!item || item.classList.contains('answered')) return
+
+    var idx = item.getAttribute('data-idx')
+    var correctAnswer = item.getAttribute('data-answer')
+    var choice = btn.getAttribute('data-choice')
+    var isCorrect = (choice === correctAnswer)
+
+    if(isCorrect) vqCorrect++
+    vqAnswered++
+
+    item.classList.add('answered')
+    var resultEl = document.getElementById('vq-result-' + idx)
+    if(resultEl) {
+      resultEl.textContent = isCorrect
+        ? '✓ 正确！' + answerDetails[idx]
+        : '✗ 错误！这是' + answerLabels[correctAnswer] + '视频。' + answerDetails[idx]
+      resultEl.className = 'vq-result show ' + (isCorrect ? 'correct' : 'wrong')
+    }
+
+    if(vqAnswered === 4) showVideoQuizResult()
+  })
+})
+
+function showVideoQuizResult() {
+  var pct = Math.round(vqCorrect / 4 * 100)
+  var scoreEl = document.getElementById('quiz-score')
+  scoreEl.innerHTML = '你的成绩：' + vqCorrect + '/4（' + pct + '%）<br>' +
+    '<span style="font-size:13px;color:var(--text-secondary);font-weight:400">' +
+    '本实验中，真实影像识别准确率仅 <strong style="color:var(--danger)">50.0%</strong>，' +
+    '新闻深伪组误判率高达 <strong style="color:var(--danger)">57.7%</strong>' +
+    '</span>'
+  scoreEl.classList.add('show')
+  document.getElementById('quiz-reset').classList.add('show')
+}
+
+function resetVideoQuiz() {
+  vqAnswered = 0; vqCorrect = 0
+  document.querySelectorAll('.video-quiz-item').forEach(function(el) {
+    el.classList.remove('answered')
+    var idx = el.getAttribute('data-idx')
+    var resultEl = document.getElementById('vq-result-' + idx)
+    resultEl.className = 'vq-result'
+    resultEl.textContent = ''
+    // Reset video to beginning
+    var video = el.querySelector('video')
+    if(video) { video.pause(); video.currentTime = 0 }
+  })
+  document.getElementById('quiz-score').classList.remove('show')
+  document.getElementById('quiz-reset').classList.remove('show')
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'})
+}
+
+// ===== Keyboard =====
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowDown'||e.key==='j') window.scrollBy({top:window.innerHeight*0.8,behavior:'smooth'})
+  if(e.key==='ArrowUp'||e.key==='k') window.scrollBy({top:-window.innerHeight*0.8,behavior:'smooth'})
+})
+</script>
+</body>
+</html>
